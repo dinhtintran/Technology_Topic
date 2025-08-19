@@ -7,6 +7,11 @@ from django.utils import timezone
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField("date published")
+    # Thêm fields mới để demo migration
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    slug = models.SlugField(max_length=250, unique=True, null=True, blank=True)
+    
     def __str__(self):
         return self.question_text
     
