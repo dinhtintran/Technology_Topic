@@ -1,0 +1,102 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search - Polls App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        .nav-links { margin: 20px 0; }
+        .nav-links a { margin-right: 15px; color: #1976d2; text-decoration: none; }
+        .search-form { margin: 20px 0; }
+        .search-form input[type="text"] { padding: 10px; font-size: 16px; width: 300px; }
+        .search-form button { padding: 10px 20px; font-size: 16px; background: #2196f3; color: white; border: none; cursor: pointer; }
+        .search-results { margin-top: 20px; }
+        .result-item { background: white; border: 1px solid #ddd; padding: 20px; margin: 10px 0; border-radius: 5px; }
+        .meta-info { color: #666; font-size: 0.9em; margin-top: 10px; }
+        .tag { background: #e1f5fe; padding: 3px 8px; border-radius: 3px; margin-right: 5px; font-size: 0.8em; }
+        .pagination { margin: 20px 0; text-align: center; }
+        .pagination a { margin: 0 5px; padding: 5px 10px; background: #f0f0f0; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Search Questions</h1>
+        <div class="nav-links">
+            <a href="{% url 'polls:index' %}">🏠 Home</a>
+            <a href="{% url 'polls:category_list' %}">📂 Categories</a>
+            <a href="{% url 'polls:author_list' %}">👥 Authors</a>
+            <a href="{% url 'polls:tag_list' %}">🏷️ Tags</a>
+            <a href="{% url 'polls:search' %}">🔍 Search</a>
+        </div>
+    </div>
+
+    <div class="search-form">
+        <form method="get">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search questions, categories, authors, or tags...">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    {% if query %}
+        <div class="search-results">
+            <h2>Search Results for "{{ query }}" ({{ total_results }} found)</h2>
+            
+            {% if questions %}
+                {% for question in questions %}
+                    <div class="result-item">
+                        <h3><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></h3>
+                        <p><strong>Published:</strong> {{ question.pub_date|date:"M d, Y" }}</p>
+                        
+                        {% if question.extended %}
+                            <div class="meta-info">
+                                {% if question.extended.category %}
+                                    <span>📂 <a href="{% url 'polls:category_detail' question.extended.category.id %}">{{ question.extended.category.name }}</a></span>
+                                {% endif %}
+                                
+                                <span>👤 <a href="{% url 'polls:author_detail' question.extended.author.id %}">{{ question.extended.author.name }}</a></span>
+                                
+                                <span>📊 {{ question.extended.get_difficulty_level_display }}</span>
+                                
+                                <span>👀 {{ question.extended.view_count }} views</span>
+                                
+                                {% if question.extended.is_featured %}
+                                    <span style="color: gold;">⭐ Featured</span>
+                                {% endif %}
+                                
+                                <div style="margin-top: 10px;">
+                                    {% for tag in question.extended.tags.all %}
+                                        <span class="tag">{{ tag.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?q={{ query }}&page=1">&laquo; first</a>
+                            <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+                        {% if page_obj.has_next %}
+                            <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">next</a>
+                            <a href="?q={{ query }}&page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <p>No results found. Try different keywords.</p>
+            {% endif %}
+        </div>
+    {% else %}
+        <p>Enter search terms to find questions.</p>
+    {% endif %}
+</body>
+</html>

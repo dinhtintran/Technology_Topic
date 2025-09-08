@@ -1,0 +1,46 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authors - Polls App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        .nav-links { margin: 20px 0; }
+        .nav-links a { margin-right: 15px; color: #1976d2; text-decoration: none; }
+        .author-card { background: white; border: 1px solid #ddd; padding: 20px; margin: 10px 0; border-radius: 5px; }
+        .count-badge { background: #4caf50; color: white; padding: 3px 8px; border-radius: 15px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>👥 {{ title }}</h1>
+        <div class="nav-links">
+            <a href="{% url 'polls:index' %}">🏠 Home</a>
+            <a href="{% url 'polls:category_list' %}">📂 Categories</a>
+            <a href="{% url 'polls:author_list' %}">👥 Authors</a>
+            <a href="{% url 'polls:tag_list' %}">🏷️ Tags</a>
+            <a href="{% url 'polls:search' %}">🔍 Search</a>
+        </div>
+    </div>
+
+    {% if authors %}
+        {% for author in authors %}
+            <div class="author-card">
+                <h3>
+                    <a href="{% url 'polls:author_detail' author.id %}">{{ author.name }}</a>
+                    <span class="count-badge">{{ author.question_count }} questions</span>
+                </h3>
+                <p>📧 {{ author.email }}</p>
+                {% if author.bio %}
+                    <p>{{ author.bio }}</p>
+                {% endif %}
+                <p><small>Joined: {{ author.created_at|date:"M d, Y" }}</small></p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No authors found.</p>
+    {% endif %}
+</body>
+</html>
