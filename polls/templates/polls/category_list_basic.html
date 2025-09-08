@@ -1,0 +1,18 @@
+<h1>Categories</h1>
+<a href="{% url 'polls:index' %}">← Back to Home</a>
+
+{% if categories %}
+    <ul>
+    {% for category in categories %}
+        <li>
+            <a href="{% url 'polls:category_detail' category.id %}">{{ category.name }}</a>
+            ({{ category.question_count }} questions)
+            {% if category.description %}
+                <p>{{ category.description }}</p>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No categories found.</p>
+{% endif %}

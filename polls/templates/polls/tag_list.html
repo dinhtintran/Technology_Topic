@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tags - Polls App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        .nav-links { margin: 20px 0; }
+        .nav-links a { margin-right: 15px; color: #1976d2; text-decoration: none; }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+        .tag-item { 
+            padding: 10px 15px; 
+            border-radius: 20px; 
+            text-decoration: none; 
+            color: white; 
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .tag-item:hover { transform: scale(1.1); }
+        .count-badge { background: rgba(255,255,255,0.8); color: #333; padding: 2px 6px; border-radius: 10px; font-size: 0.8em; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏷️ {{ title }}</h1>
+        <div class="nav-links">
+            <a href="{% url 'polls:index' %}">🏠 Home</a>
+            <a href="{% url 'polls:category_list' %}">📂 Categories</a>
+            <a href="{% url 'polls:author_list' %}">👥 Authors</a>
+            <a href="{% url 'polls:tag_list' %}">🏷️ Tags</a>
+            <a href="{% url 'polls:search' %}">🔍 Search</a>
+        </div>
+    </div>
+
+    {% if tags %}
+        <div class="tag-cloud">
+            {% for tag in tags %}
+                <a href="{% url 'polls:search' %}?q={{ tag.name }}" 
+                   class="tag-item" 
+                   style="background-color: {{ tag.color }};">
+                    {{ tag.name }}
+                    <span class="count-badge">{{ tag.question_count }}</span>
+                </a>
+            {% endfor %}
+        </div>
+        
+        <h3>Tag Details</h3>
+        <ul>
+            {% for tag in tags %}
+                <li>
+                    <strong style="color: {{ tag.color }};">{{ tag.name }}</strong> 
+                    - {{ tag.question_count }} questions
+                    <a href="{% url 'polls:search' %}?q={{ tag.name }}">(View questions)</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tags found.</p>
+    {% endif %}
+</body>
+</html>
